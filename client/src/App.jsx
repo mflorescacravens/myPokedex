@@ -2,22 +2,26 @@ import React, {useState, useEffect} from 'react';
 import './App.css';
 import axios from 'axios';
 import { fade, makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import orange from '@material-ui/core/colors/orange'
-import purple from '@material-ui/core/colors/purple'
+import orange from '@material-ui/core/colors/orange';
+import purple from '@material-ui/core/colors/purple';
 import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid'
+import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar'
+import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu';
-import InfoIcon from '@material-ui/icons/Info'
+import InfoIcon from '@material-ui/icons/Info';
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from '@material-ui/core/InputBase';
 import ListSubheader from '@material-ui/core/ListSubheader';
-import GridListTileBar from '@material-ui/core/GridListTileBar'
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import BottomNavigation from '@material-ui/core/BottomNavigation';
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 
 
 const useStyles = makeStyles(theme => ({
@@ -113,11 +117,10 @@ export default function App() {
     mappedPokemon = (
       <div className={classes.gridListRoot}>
           <GridList cellHeight={180} className={classes.gridList}>
-            <GridListTile key="Subheader" cols={6} style={{ height: 'auto' }}>
-              <ListSubheader component="div">Pokemon</ListSubheader>
+            <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
             </GridListTile>
             {pokemonData.results.map(pokemon => (
-              <GridListTile key={pokemon}>
+              <GridListTile key={pokemon.url}>
                 <GridListTileBar
                   title={pokemon.name}
                   actionIcon={
@@ -177,6 +180,17 @@ export default function App() {
       </AppBar>
       {/* create a map for all pokemon data retrieved with gridlist */}
       {mappedPokemon}
+      <BottomNavigation
+        // value={value}
+        // onChange={(event, newValue) => {
+        //   setValue(newValue);
+        // }}
+        showLabels
+        className={classes.root}
+      >
+        <BottomNavigationAction label="Previous 20" icon={<NavigateBeforeIcon />} />
+        <BottomNavigationAction label="Next 20" icon={<NavigateNextIcon />} />
+      </BottomNavigation>
     </div>
   );
 }
