@@ -22,6 +22,7 @@ import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import AutorenewIcon from '@material-ui/icons/Autorenew';
 
 
 const useStyles = makeStyles(theme => ({
@@ -103,6 +104,7 @@ export default function App() {
   const [filter, setFilter] = useState('');
   const [pokemon, setPokemon] = useState('')
   const [pokemonData, setPokemonData] = useState();
+
   
   useEffect(() => {
     axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon}`).then((response) => {
@@ -110,10 +112,14 @@ export default function App() {
       console.log(response.data)
     })
   }, [])
-
+  
   var mappedPokemon;
+  var next;
   
   if (pokemonData) {
+    next = () => {
+      setPokemonData(pokemonData.next)
+    }
     mappedPokemon = (
       <div className={classes.gridListRoot}>
           <GridList cellHeight={180} className={classes.gridList}>
@@ -133,6 +139,11 @@ export default function App() {
             ))}
           </GridList>
         </div>
+    )
+  }
+  if (!pokemonData) {
+    mappedPokemon = (
+      <AutorenewIcon />
     )
   }
   
@@ -189,7 +200,7 @@ export default function App() {
         className={classes.root}
       >
         <BottomNavigationAction label="Previous 20" icon={<NavigateBeforeIcon />} />
-        <BottomNavigationAction label="Next 20" icon={<NavigateNextIcon />} />
+        <BottomNavigationAction label="Next 20" onClick={next} icon={<NavigateNextIcon />} />
       </BottomNavigation>
     </div>
   );
