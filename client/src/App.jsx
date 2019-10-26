@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react';
+import Link from 'react-router';
 import './App.css';
 import axios from 'axios';
 import { fade, makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import orange from '@material-ui/core/colors/orange';
-import purple from '@material-ui/core/colors/purple';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
@@ -23,6 +22,8 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
+import Button from '@material-ui/core/Button';
+import Avatar from '@material-ui/core/Avatar';
 
 
 const useStyles = makeStyles(theme => ({
@@ -31,7 +32,7 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
   },
   appBar: {
-    backgroundColor: 'orange',
+    
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -93,6 +94,9 @@ const useStyles = makeStyles(theme => ({
     icon: {
       color: 'rgba(255, 255, 255, 0.54)',
     },
+    pokeShow: {
+      marginTop: 10,
+    },
   },
 }));
 
@@ -100,29 +104,69 @@ export default function App() {
   const classes = useStyles();
 
   // hooks
-  const [generation, setGeneration] = useState();
   const [filter, setFilter] = useState('');
-  const [pokemon, setPokemon] = useState('')
+  const [update, setUpdate] = useState('');
+  const [searchedPokemon, setSearchedPokemon] = useState()
   const [pokemonData, setPokemonData] = useState();
+  const [myFavArr, setMyFavArr] = useState([]);
 
   
   useEffect(() => {
-    axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon}`).then((response) => {
+    axios.get(`https://pokeapi.co/api/v2/pokemon/`).then((response) => {
       setPokemonData(response.data)
       console.log(response.data)
     })
   }, [])
+
+  const updateSearch = (e) => {
+    setUpdate(e.target.value.toLowerCase())
+    if (e.keyCode === 13) {
+      console.log('enter key clicked')
+    }
+  }
   
-  var mappedPokemon;
+  const search = (e) => {
+    e.preventDefault()
+    axios.get(`https://pokeapi.co/api/v2/pokemon/${update}`).then((response) => {
+      setSearchedPokemon(response.data)
+      console.log(response.data)
+    })
+  }
+  
   var next;
-  
+  var mappedPokemon;
+  var indPokemonShow;
+  var secondType = '';
+
+  if (searchedPokemon) {
+    if (searchedPokemon.types[1] !== undefined) {
+      secondType = '/' + searchedPokemon.types[1].type.name;
+    }
+    indPokemonShow = (
+      <Grid container justify="center" alignItems="center">
+        <Typography item xs={12} variant="h4" className={classes.pokeShow} display='inline' align='center'>{searchedPokemon.name}
+          <Typography>***Based off of base stats***</Typography>
+          <Typography>Id: #{searchedPokemon.id}</Typography>
+          <Typography>Type: {searchedPokemon.types[0].type.name}{secondType}</Typography>
+          <Typography>Weight: {searchedPokemon.weight}</Typography>
+          <Typography>Speed: {searchedPokemon.stats[0].base_stat}</Typography>
+          <Typography>Special-Defense: {searchedPokemon.stats[1].base_stat}</Typography>
+          <Typography>Special-Attack: {searchedPokemon.stats[2].base_stat}</Typography>
+          <Typography>Defense: {searchedPokemon.stats[3].base_stat}</Typography>
+          <Typography>Attack: {searchedPokemon.stats[4].base_stat}</Typography>
+          <Typography>HP: {searchedPokemon.stats[5].base_stat}</Typography>
+        </Typography>
+        <img item src={searchedPokemon.sprites.front_default} className='pokemonShow bounce-7' />
+      </Grid>
+    )
+  }
   if (pokemonData) {
     next = () => {
       setPokemonData(pokemonData.next)
     }
     mappedPokemon = (
       <div className={classes.gridListRoot}>
-          <GridList cellHeight={180} className={classes.gridList}>
+          <GridList cellHeight={80} className={classes.gridList}>
             <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
             </GridListTile>
             {pokemonData.results.map(pokemon => (
@@ -140,10 +184,9 @@ export default function App() {
           </GridList>
         </div>
     )
-  }
-  if (!pokemonData) {
+  } else if (!pokemonData) {
     mappedPokemon = (
-      <AutorenewIcon />
+      <p>test</p>
     )
   }
   
@@ -177,19 +220,24 @@ export default function App() {
             <div className={classes.searchIcon}>
               <SearchIcon  />
             </div>
-            <InputBase
-              
-              placeholder="Pokemon..."
-              classes={{
-                root: classes.inputRoot,
-                input: classes.inputInput,
-              }}
-              inputProps={{ 'aria-label': 'search' }}
-            />
+            <form action="GET" onSubmit={search}>
+              <InputBase
+                onChange={updateSearch}
+                placeholder="Pokemon..."
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput,
+                }}
+                inputProps={{ 'aria-label': 'search' }}
+              />
+              <button variant="outlined" color="inherit">Search</button>
+            </form>
           </div>
         </Toolbar>
       </AppBar>
-      {/* create a map for all pokemon data retrieved with gridlist */}
+      {/* //? render searched pokemon from search bar */}
+      {indPokemonShow}
+      {/* //? create a map for all pokemon data retrieved with gridlist */}
       {mappedPokemon}
       <BottomNavigation
         // value={value}
