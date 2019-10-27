@@ -114,7 +114,7 @@ export default function App() {
   useEffect(() => {
     axios.get(`https://pokeapi.co/api/v2/pokemon/`).then((response) => {
       setPokemonData(response.data)
-      // console.log(response.data)
+      console.log(response.data)
     })
   }, [])
 
@@ -140,30 +140,32 @@ export default function App() {
       secondType = '/' + searchedPokemon.types[1].type.name;
     }
     indPokemonShow = (
-      <Grid container justify="center" alignItems="center">
-        <Typography item xs={12} variant="h4" className={classes.pokeShow} display='inline' align='center'>{searchedPokemon.name}
-          <Typography>***Base stats***</Typography>
-          <Typography>Id: #{searchedPokemon.id}</Typography>
-          <Typography>Type: {searchedPokemon.types[0].type.name}{secondType}</Typography>
-          <Typography>Weight: {searchedPokemon.weight}</Typography>
-          <Typography>Height: {searchedPokemon.height}</Typography>
-          <Typography>Speed: {searchedPokemon.stats[0].base_stat}</Typography>
-          <Typography>Special-Defense: {searchedPokemon.stats[1].base_stat}</Typography>
-          <Typography>Special-Attack: {searchedPokemon.stats[2].base_stat}</Typography>
-          <Typography>Defense: {searchedPokemon.stats[3].base_stat}</Typography>
-          <Typography>Attack: {searchedPokemon.stats[4].base_stat}</Typography>
-          <Typography>HP: {searchedPokemon.stats[5].base_stat}</Typography>
-          <Typography variant='h5' color='primary'>Click Image!</Typography>
-        </Typography>
+      <Grid container justify="center" alignItems="center" direction='column'>
+        <Typography xs={12} variant="h4" className={classes.pokeShow} align='center'>{searchedPokemon.name}</Typography>
+        <Typography>***Base stats***</Typography>
+        <Typography>Id: #{searchedPokemon.id}</Typography>
+        <Typography>Type: {searchedPokemon.types[0].type.name}{secondType}</Typography>
+        <Typography>Weight: {searchedPokemon.weight}</Typography>
+        <Typography>Height: {searchedPokemon.height}</Typography>
+        <Typography>Speed: {searchedPokemon.stats[0].base_stat}</Typography>
+        <Typography>Special-Defense: {searchedPokemon.stats[1].base_stat}</Typography>
+        <Typography>Special-Attack: {searchedPokemon.stats[2].base_stat}</Typography>
+        <Typography>Defense: {searchedPokemon.stats[3].base_stat}</Typography>
+        <Typography>Attack: {searchedPokemon.stats[4].base_stat}</Typography>
+        <Typography>HP: {searchedPokemon.stats[5].base_stat}</Typography>
+        <Typography variant='h5' color='primary'>Click Image!</Typography>
         <div>
-          <img item src={searchedPokemon.sprites.front_default} className='pokemonShow bounce-7' />
+          <img src={searchedPokemon.sprites.front_default} className='pokemonShow bounce-7' />
         </div>
       </Grid>
     )
   }
   if (pokemonData && pokemonData.results !== undefined) {
     next = () => {
-      setPokemonData(pokemonData.next)
+      axios.get(pokemonData.next).then((response) => {
+        setPokemonData(response.data)
+        console.log(response.data)
+      })
     }
     mappedPokemon = (
       <div className={classes.gridListRoot}>
