@@ -102,7 +102,6 @@ const useStyles = makeStyles(theme => ({
 
 export default function App() {
   const classes = useStyles();
-
   // hooks
   const [filter, setFilter] = useState('');
   const [update, setUpdate] = useState('');
@@ -110,11 +109,10 @@ export default function App() {
   const [pokemonData, setPokemonData] = useState();
   const [myFavArr, setMyFavArr] = useState([]);
 
-  
   useEffect(() => {
     axios.get(`https://pokeapi.co/api/v2/pokemon/`).then((response) => {
       setPokemonData(response.data)
-      console.log(response.data)
+      console.log('this is pokemon data', response.data.previous)
     })
   }, [])
 
@@ -127,46 +125,69 @@ export default function App() {
     axios.get(`https://pokeapi.co/api/v2/pokemon/${update}`).then((response) => {
       setSearchedPokemon(response.data)
       // console.log(response.data, response.data.sprites)
+    }).catch(error => {
+      setSearchedPokemon({error: true, message: "We didn't find a Pokemon with that name"})
+      console.log(error.response)
     })
   }
   
   var next;
+  var previous;
   var mappedPokemon;
   var indPokemonShow;
   var secondType = '';
+  var previousButton
 
   if (searchedPokemon) {
-    if (searchedPokemon.types[1] !== undefined) {
-      secondType = '/' + searchedPokemon.types[1].type.name;
+    if (searchedPokemon.error === true) {
+      indPokemonShow = (
+        <Grid container justify="center" alignItems="center" direction='column'>
+          <Typography>{searchedPokemon.message}</Typography>
+        </Grid>
+      )
+    } else {
+      if (searchedPokemon.types[1] !== undefined) {
+        secondType = '/' + searchedPokemon.types[1].type.name;
+      }
+      indPokemonShow = (
+        <Grid container justify="center" alignItems="center" direction='column'>
+          <Typography xs={12} variant="h4" className={classes.pokeShow} align='center'>{searchedPokemon.name}</Typography>
+          <Typography>***Base stats***</Typography>
+          <Typography>Id: #{searchedPokemon.id}</Typography>
+          <Typography>Type: {searchedPokemon.types[0].type.name}{secondType}</Typography>
+          <Typography>Weight: {searchedPokemon.weight}</Typography>
+          <Typography>Height: {searchedPokemon.height}</Typography>
+          <Typography>Speed: {searchedPokemon.stats[0].base_stat}</Typography>
+          <Typography>Special-Defense: {searchedPokemon.stats[1].base_stat}</Typography>
+          <Typography>Special-Attack: {searchedPokemon.stats[2].base_stat}</Typography>
+          <Typography>Defense: {searchedPokemon.stats[3].base_stat}</Typography>
+          <Typography>Attack: {searchedPokemon.stats[4].base_stat}</Typography>
+          <Typography>HP: {searchedPokemon.stats[5].base_stat}</Typography>
+          <Typography variant='h5' color='primary'>Click Image!</Typography>
+          <div>
+            <img src={searchedPokemon.sprites.front_default} className='pokemonShow bounce-7' />
+          </div>
+        </Grid>
+      )
     }
-    indPokemonShow = (
-      <Grid container justify="center" alignItems="center" direction='column'>
-        <Typography xs={12} variant="h4" className={classes.pokeShow} align='center'>{searchedPokemon.name}</Typography>
-        <Typography>***Base stats***</Typography>
-        <Typography>Id: #{searchedPokemon.id}</Typography>
-        <Typography>Type: {searchedPokemon.types[0].type.name}{secondType}</Typography>
-        <Typography>Weight: {searchedPokemon.weight}</Typography>
-        <Typography>Height: {searchedPokemon.height}</Typography>
-        <Typography>Speed: {searchedPokemon.stats[0].base_stat}</Typography>
-        <Typography>Special-Defense: {searchedPokemon.stats[1].base_stat}</Typography>
-        <Typography>Special-Attack: {searchedPokemon.stats[2].base_stat}</Typography>
-        <Typography>Defense: {searchedPokemon.stats[3].base_stat}</Typography>
-        <Typography>Attack: {searchedPokemon.stats[4].base_stat}</Typography>
-        <Typography>HP: {searchedPokemon.stats[5].base_stat}</Typography>
-        <Typography variant='h5' color='primary'>Click Image!</Typography>
-        <div>
-          <img src={searchedPokemon.sprites.front_default} className='pokemonShow bounce-7' />
-        </div>
-      </Grid>
-    )
   }
   if (pokemonData && pokemonData.results !== undefined) {
     next = () => {
       axios.get(pokemonData.next).then((response) => {
         setPokemonData(response.data)
-        console.log(response.data)
       })
     }
+    previous = () => {
+      axios.get(pokemonData.previous).then((response) => {
+        setPokemonData(response.data)
+      })
+    }
+    if (pokemonData && pokemonData.previous) {
+      previousButton = (
+        <BottomNavigationAction label="Previous 20" onClick={previous} icon={<NavigateBeforeIcon />} />
+      )
+    }
+    
     mappedPokemon = (
       <div className={classes.gridListRoot}>
           <GridList cellHeight={80} className={classes.gridList}>
@@ -250,7 +271,7 @@ export default function App() {
         showLabels
         className={classes.root}
       >
-        <BottomNavigationAction label="Previous 20" icon={<NavigateBeforeIcon />} />
+        {previousButton}
         <BottomNavigationAction label="Next 20" onClick={next} icon={<NavigateNextIcon />} />
       </BottomNavigation>
     </div>
