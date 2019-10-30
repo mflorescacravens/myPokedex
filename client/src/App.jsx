@@ -131,15 +131,15 @@ export default function App() {
     e.preventDefault()
     axios.get(`https://pokeapi.co/api/v2/pokemon/${update}`).then((response) => {
       setSearchedPokemon(response.data)
-      console.log(response.data)
+      // console.log(response.data)
     }).catch(error => {
       setSearchedPokemon({error: true, message: "We didn't find a Pokemon with that name"})
-      console.log(error.response)
+      // console.log(error.response)
     })
   }
   
   const clickSearch = (e) => {
-    console.log()
+    // console.log()
     // setUpdate(e.target.value)
     // axios.get(`https://pokeapi.co/api/v2/pokemon/${update}`).then((response) => {
     //   setSearchedPokemon(response.data)
