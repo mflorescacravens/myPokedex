@@ -103,18 +103,25 @@ const useStyles = makeStyles(theme => ({
 export default function App() {
   const classes = useStyles();
   // hooks
-  const [filter, setFilter] = useState('');
   const [update, setUpdate] = useState('');
   const [searchedPokemon, setSearchedPokemon] = useState()
   const [pokemonData, setPokemonData] = useState();
-  const [myFavArr, setMyFavArr] = useState([]);
+
+  var next;
+  var previous;
+  var mappedPokemon;
+  var indPokemonShow;
+  var secondType = '';
+  var previousButton
+  // var imgArr = [searchedPokemon.sprites.front_default, searchedPokemon.sprites.back_default, searchedPokemon.sprites.shiny_front, searchedPokemon.sprites.shiny_back];
 
   useEffect(() => {
     axios.get(`https://pokeapi.co/api/v2/pokemon/`).then((response) => {
       setPokemonData(response.data)
-      console.log('this is pokemon data', response.data.previous)
+      // console.log('this is pokemon data', response.data)
     })
   }, [])
+
 
   const updateSearch = (e) => {
     setUpdate(e.target.value.toLowerCase())
@@ -124,19 +131,20 @@ export default function App() {
     e.preventDefault()
     axios.get(`https://pokeapi.co/api/v2/pokemon/${update}`).then((response) => {
       setSearchedPokemon(response.data)
-      // console.log(response.data, response.data.sprites)
+      console.log(response.data)
     }).catch(error => {
       setSearchedPokemon({error: true, message: "We didn't find a Pokemon with that name"})
       console.log(error.response)
     })
   }
   
-  var next;
-  var previous;
-  var mappedPokemon;
-  var indPokemonShow;
-  var secondType = '';
-  var previousButton
+  const clickSearch = (e) => {
+    console.log()
+    // setUpdate(e.target.value)
+    // axios.get(`https://pokeapi.co/api/v2/pokemon/${update}`).then((response) => {
+    //   setSearchedPokemon(response.data)
+    // })
+  }
 
   if (searchedPokemon) {
     if (searchedPokemon.error === true) {
@@ -163,7 +171,6 @@ export default function App() {
           <Typography>Defense: {searchedPokemon.stats[3].base_stat}</Typography>
           <Typography>Attack: {searchedPokemon.stats[4].base_stat}</Typography>
           <Typography>HP: {searchedPokemon.stats[5].base_stat}</Typography>
-          <Typography variant='h5' color='primary'>Click Image!</Typography>
           <div>
             <img src={searchedPokemon.sprites.front_default} className='pokemonShow bounce-7' />
           </div>
@@ -194,15 +201,18 @@ export default function App() {
             <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
             </GridListTile>
             {pokemonData.results.map(pokemon => (
-              <GridListTile key={pokemon.url}>
-                <GridListTileBar
-                  title={pokemon.name}
-                  actionIcon={
-                    <IconButton aria-label={`info about ${pokemon.name}`} className={classes.icon}>
-                      <InfoIcon />
-                    </IconButton>
-                  }
-                />
+              <GridListTile key={pokemon.name} id={pokemon.name}>
+                {/* <div onClick={clickSearch} name={pokemon.name}> */}
+                  <GridListTileBar
+                    onClick={clickSearch}
+                    title={pokemon.name}
+                    actionIcon={
+                      <IconButton aria-label={`info about ${pokemon.name}`} className={classes.icon}>
+                        <InfoIcon />
+                      </IconButton>
+                    }
+                  />
+                {/* </div> */}
               </GridListTile>
             ))}
           </GridList>
@@ -210,15 +220,9 @@ export default function App() {
     )
   } else if (!pokemonData) {
     mappedPokemon = (
-      <p>test</p>
+      <br/>
     )
   }
-  
-  // const searchPokemon = () => {
-    
-  // }
-
-
   
   return (
     <div className={classes.root}>
@@ -229,14 +233,6 @@ export default function App() {
       </div>
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
-          {/* <IconButton
-            edge="start"
-            className={classes.menuButton}
-            color="inherit"
-            aria-label="open drawer"
-          >
-            <MenuIcon />
-          </IconButton> */}
           <Typography className={classes.title} variant="h6" noWrap>
             Miguel's Pokedex
           </Typography>
