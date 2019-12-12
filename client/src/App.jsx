@@ -230,6 +230,7 @@ export default function App() {
         <img className='main' src="https://i.kym-cdn.com/photos/images/original/001/024/523/1c7.jpg" alt="MainLogo"/>
         <Typography variant='h5' align='center'>Welcome to Miguel's Pokedex</Typography>
         <Typography variant='subtitle1' align='center'>Search for a Pokemon by number or name</Typography>
+        <Typography color='secondary'>Site under construction</Typography>
       </div>
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
